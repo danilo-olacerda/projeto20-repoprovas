@@ -7,3 +7,11 @@ export async function getUserByEmail(email: string) {
         }
     });
 }
+
+export async function getAllUserEmail(){
+    return await prisma.users.findMany({
+        select: {
+            email: true
+        }
+    });
+}

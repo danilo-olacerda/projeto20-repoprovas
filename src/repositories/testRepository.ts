@@ -1,4 +1,5 @@
 import prisma from '../db/db';
+import { ITestsData } from '../types/testTypes';
 
 export async function newTest(name: string, pdfUrl: string, teacherDisciplineId: number, categoryId: number) {
     return await prisma.tests.create({
@@ -94,4 +95,57 @@ export async function getTestsByTeachers() {
         }
     })
     
+}
+
+export async function getTestInfo(test: ITestsData){
+
+    const teacher = await prisma.teachersDisciplines.findUnique({
+        where: {
+            id: test.teacherDisciplineId
+        },
+        select: {
+            teacher: {
+                select: {
+                    name: true
+                }
+            }
+        }
+    });
+    
+    const discipline = await prisma.teachersDisciplines.findUnique({
+        where: {
+            id: test.teacherDisciplineId
+        },
+        select: {
+            discipline: {
+                select: {
+                    name: true
+                }
+            }
+        }
+    });
+
+    const term = await prisma.teachersDisciplines.findUnique({
+        where: {
+            id: test.teacherDisciplineId
+        },
+        select: {
+            discipline: {
+                select: {
+                    term: {
+                        select: {
+                            number: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    return {
+        teacher: teacher?.teacher.name,
+        discipline: discipline?.discipline.name,
+        term: term?.discipline.term.number
+    }
+
 }
